@@ -42,6 +42,7 @@ namespace iengine
         {
             if (variables.Count == 0)
             {
+                // USE THIS BLOCK OF CODE TO PRINT THE TRUTH TABLE
                 /*
                 Console.Write(++i + "/ ");
                 foreach (KeyValuePair<string, bool> m in model)
@@ -56,7 +57,7 @@ namespace iengine
                 if (PLTrue(_kb, model))
                 {
                     // count models
-                    if (model[_goal.Children[0].Variable])
+                    if (model[_goal.Variable])
                         ModelNum++;
                     return PLTrue(_goal, model);
                 }

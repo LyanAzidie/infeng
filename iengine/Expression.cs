@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
 
-namespace TruthTable
+namespace iengine
 {
     /***
      *  All logical expressions are expressed by a tree
@@ -20,7 +20,7 @@ namespace TruthTable
         private List<Expression> _children = new List<Expression>();
 
         public Expression()
-        {}
+        { }
 
         public Expression(string variable, string operation)
         {

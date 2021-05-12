@@ -4,10 +4,10 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{81A386A5-6D19-4A16-A12C-E07F369D28D2}</ProjectGuid>
+    <ProjectGuid>{589924F5-3693-4396-9B0C-DBA0A5491900}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>TruthTable</RootNamespace>
-    <AssemblyName>TruthTable</AssemblyName>
+    <RootNamespace>iengine</RootNamespace>
+    <AssemblyName>iengine</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -46,7 +46,7 @@
     <Compile Include="Expression.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TT.cs" />
+    <Compile Include="TTEntail.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

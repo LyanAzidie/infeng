@@ -1,7 +1,0 @@
-D:\Uni\Year3\Semester1\COS30019 - Intro to AI\Assignment2\TruthTable\TruthTable\bin\Debug\TruthTable.exe.config
-D:\Uni\Year3\Semester1\COS30019 - Intro to AI\Assignment2\TruthTable\TruthTable\bin\Debug\TruthTable.exe
-D:\Uni\Year3\Semester1\COS30019 - Intro to AI\Assignment2\TruthTable\TruthTable\bin\Debug\TruthTable.pdb
-D:\Uni\Year3\Semester1\COS30019 - Intro to AI\Assignment2\TruthTable\TruthTable\obj\Debug\TruthTable.csprojAssemblyReference.cache
-D:\Uni\Year3\Semester1\COS30019 - Intro to AI\Assignment2\TruthTable\TruthTable\obj\Debug\TruthTable.csproj.CoreCompileInputs.cache
-D:\Uni\Year3\Semester1\COS30019 - Intro to AI\Assignment2\TruthTable\TruthTable\obj\Debug\TruthTable.exe
-D:\Uni\Year3\Semester1\COS30019 - Intro to AI\Assignment2\TruthTable\TruthTable\obj\Debug\TruthTable.pdb

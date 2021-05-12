@@ -4,14 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-/***
- * Truth Table Algorithm
- * Assumption: given a list of strings including all the propositional logic
- * **/
-
-namespace TruthTable
+namespace iengine
 {
-    public class TT
+    public class TTEntail
     {
         private Expression _kb;
         private Expression _goal;
@@ -20,7 +15,7 @@ namespace TruthTable
 
         public int ModelNum { get => _modelNum; set => _modelNum = value; }
 
-        public TT(Expression KB, Expression asked)
+        public TTEntail(Expression KB, Expression asked)
         {
             _kb = KB;
             _goal = asked;

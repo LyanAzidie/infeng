@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Text.RegularExpressions;
 
 namespace iengine
 {
@@ -12,6 +13,7 @@ namespace iengine
         private Expression _goal;
         private Expression _curSearchNode;
         private List<string> _path = new List<string>();
+        private bool _pathFound = false;
 
         public BC(Expression kb, Expression asked)
         {
@@ -24,6 +26,7 @@ namespace iengine
         public Expression Goal { get => _goal; set => _goal = value; }
         public Expression CurSearchNode { get => _curSearchNode; set => _curSearchNode = value; }
         public List<string> Path { get => _path; set => _path = value; }
+        public bool PathFound { get => _pathFound; set => _pathFound = value; }
 
         // initialise search process
         public bool BCEntail()
@@ -31,18 +34,19 @@ namespace iengine
             Path.Add(Goal.Variable);
             bool notExhausted = true;
 
-            // could not figure out how to check which one is trueee
-            while (Path.Last() !=  || notExhausted)
+            // loop until exhausted
+            while (notExhausted)
             {
                 foreach (Expression child in Kb.Children)
                 {
                     string temp = Path.Last();
                     CheckNode(child);
-                    if (temp != Path.Last())
+                    if (temp != Path.Last() || PathFound)
                     {
+                        if (PathFound)
+                            notExhausted = false;
                         break;
                     }
-
                     if (Kb.Children.Last() == child)
                     {
                         notExhausted = false;
@@ -50,12 +54,7 @@ namespace iengine
                 }
             }
 
-            // check goal is already found
-            if (Path.Last() == Goal.Variable)
-            {
-                return true;
-            }
-            return false;
+            return PathFound;
         }
 
         private void CheckNode(Expression node)
@@ -63,22 +62,91 @@ namespace iengine
             // check node is goal
             if (IsSameNode(CurSearchNode, node))
             {
+                PathFound = true;
                 return;
             }
-            // check child one
+            // check children
             else if (node.Children.Count == 2)
             {
-                if (IsSameNode(CurSearchNode, node.Children[0]))
+                if (Regex.IsMatch(node.Children[1].Variable, CurSearchNode.Variable))
                 {
-                    Path.Add(node.Children[1].Variable);
-                    CurSearchNode = node.Children[1];
-                    return;
-                }
-                else if (IsSameNode(CurSearchNode, node.Children[1]))
-                {
-                    Path.Add(node.Children[0].Variable);
-                    CurSearchNode = node.Children[0];
-                    return;
+                    if (node.Children[0].Operation != "")
+                    {
+                        CheckNode(node.Children[0]);
+                    }
+                    if (node.Children[1].Operation != "")
+                    {
+                        CheckNode(node.Children[1]);
+                    }
+                    if (IsSameNode(CurSearchNode, node.Children[1]))
+                    {
+                        // case all variables (=> or <=>)
+                        if (node.Children[0].Operation == "" && node.Children[1].Operation == "")
+                        {
+                            Path.Add(node.Children[0].Variable);
+                            CurSearchNode = node.Children[0];
+                            return;
+                        }
+                        // case &
+                        if (node.Children[0].Operation == "&")
+                        {
+                            BC checkLeft = new BC(Kb, node.Children[0].Children[0]);
+                            BC checkRight = new BC(Kb, node.Children[0].Children[1]);
+                            if (checkLeft.BCEntail() && checkRight.BCEntail())
+                            {
+                                foreach (string s in checkLeft.Path)
+                                {
+                                    if (!Path.Contains(s))
+                                        Path.Add(s);
+                                }
+                                foreach (string s in checkRight.Path)
+                                {
+                                    if (!Path.Contains(s))
+                                        Path.Add(s);
+                                }
+                                PathFound = true;
+                                return;
+                            }
+                            return;
+                        }
+                        // case ||
+                        else if (node.Children[0].Operation == "||")
+                        {
+                            BC checkLeft = new BC(Kb, node.Children[0].Children[0]);
+                            BC checkRight = new BC(Kb, node.Children[0].Children[1]);
+                            if (checkLeft.BCEntail())
+                            {
+                                foreach (string s in checkLeft.Path)
+                                {
+                                    if (!Path.Contains(s))
+                                        Path.Add(s);
+                                }
+                            }
+                            else if (checkRight.BCEntail())
+                            {
+                                foreach (string s in checkRight.Path)
+                                {
+                                    if (!Path.Contains(s))
+                                        Path.Add(s);
+                                }
+                            }
+                            return;
+                        }
+                        // case ~
+                        else if (node.Children[0].Operation == "~")
+                        {
+                            BC checkLeft = new BC(Kb, node.Children[0].Children[0]);
+                            if (!checkLeft.BCEntail())
+                            {
+                                foreach (string s in checkLeft.Path)
+                                {
+                                    if (!Path.Contains(s))
+                                        Path.Add(s);
+                                }
+                            }
+                            return;
+                        }
+                    }
                 }
             }
             else

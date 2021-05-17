@@ -117,7 +117,7 @@ namespace iengine
             newExp.Height = UpdateHeight(newExp, 0);
 
             // decide priorities (for sorting purpose) - swap (only when sorted is true)
-            if (sorted && HasOps(sections[0]) || childLeft.Height < childRight.Height)
+            if (sorted && !(Operation == "&" || Operation == "~" || Operation == "||") && HasOps(sections[0]) || childLeft.Height < childRight.Height)
             {
                 Expression temp = newExp.Children[0];
                 newExp.Children[0] = newExp.Children[1];
@@ -130,7 +130,7 @@ namespace iengine
         // check if there are operations in the string
         private bool HasOps(string exp)
         {
-            return Regex.IsMatch(exp, @"[&\|=><=>~]");
+            return Regex.IsMatch(exp, @"[&\|\|=><=>~]");
         }
 
         // returns the operation that exists
@@ -153,9 +153,9 @@ namespace iengine
                 op = "&";
             }
             // check if | exists
-            else if (Regex.IsMatch(exp, @"(\w+\|\w+)"))
+            else if (Regex.IsMatch(exp, @"(\w+\|\|\w+)"))
             {
-                op = "|";
+                op = "||";
             }
             // check if - exists
             else if (Regex.IsMatch(exp, @"(\w+~\w+)"))

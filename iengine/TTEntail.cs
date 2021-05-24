@@ -108,7 +108,7 @@ namespace iengine
                 }
                 return true;
             }
-            else if (exp.Operation == "|")
+            else if (exp.Operation == "||")
             {
                 foreach (Expression child in exp.Children)
                 {

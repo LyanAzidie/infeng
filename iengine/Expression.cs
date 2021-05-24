@@ -86,7 +86,7 @@ namespace iengine
         }
 
         // check and build expressions if there are operations
-        private Expression CheckOps(string exp, int h, bool sorted)
+        public Expression CheckOps(string exp, int h, bool sorted)
         {
             Expression newExp = new Expression();
 
@@ -103,62 +103,72 @@ namespace iengine
             string op = RetrieveOps(exp);
             
             // split into rhs and lhs
-            string[] sections = exp.Split(new string[] { op }, StringSplitOptions.RemoveEmptyEntries);
+            string[] sections = exp.Split(new string[] { op }, 2, StringSplitOptions.RemoveEmptyEntries);
             newExp.Operation = op;
 
             // check the children nodes (creating a recursion effect)
+            foreach (string c in sections)
+            {
+                Expression child = CheckOps(c, h + 1, sorted);
+                newExp.Children.Add(child);
+            }
+            /*
             Expression childLeft = CheckOps(sections[0], h+1, sorted);
             Expression childRight = CheckOps(sections[1], h+1, sorted);
 
             newExp.Children.Add(childLeft);
             newExp.Children.Add(childRight);
+            */
 
             // update the height of the node based on how many ops they have
             newExp.Height = UpdateHeight(newExp, 0);
 
             // decide priorities (for sorting purpose) - swap (only when sorted is true)
-            if (sorted && !(Operation == "&" || Operation == "~" || Operation == "||") && HasOps(sections[0]) || childLeft.Height < childRight.Height)
+            if (newExp.Children.Count == 2)
             {
-                Expression temp = newExp.Children[0];
-                newExp.Children[0] = newExp.Children[1];
-                newExp.Children[1] = temp;
+                if (sorted && !(Operation == "&" || Operation == "~" || Operation == "||") && HasOps(sections[0]) || newExp.Children[0].Height < newExp.Children[1].Height)
+                {
+                    Expression temp = newExp.Children[0];
+                    newExp.Children[0] = newExp.Children[1];
+                    newExp.Children[1] = temp;
+                }
             }
 
             return newExp;
         }
 
         // check if there are operations in the string
-        private bool HasOps(string exp)
+        public bool HasOps(string exp)
         {
             return Regex.IsMatch(exp, @"[&\|\|=><=>~]");
         }
 
         // returns the operation that exists
-        private string RetrieveOps(string exp)
+        public string RetrieveOps(string exp)
         {
             string op = "";
             // check if => exists
-            if (Regex.IsMatch(exp, @"(\w+=>\w+)|(\w+&\w+=>\w+)|(\w+\|\w+=>\w+)"))
+            if (Regex.IsMatch(exp, @"([\w~]+=>[\w~]+)|([\w~]+&[\w~]+=>[\w~]+)|([\w~]+\|[\w~]+=>[\w~]+)"))
             {
                 op = "=>";
             }
             // check if <=> exists
-            else if (Regex.IsMatch(exp, @"(\w+<=>\w+)|(\w+&\w+<=>\w+)|(\w+\|\w+<=>\w+)"))
+            else if (Regex.IsMatch(exp, @"([\w~]+<=>[\w~]+)|([\w~]+&[\w~]+<=>[\w~]+)|([\w~]+\|[\w~]+<=>[\w~]+)"))
             {
                 op = "<=>";
             }
             // check if & exists
-            else if (Regex.IsMatch(exp, @"(\w+&\w+)"))
+            else if (Regex.IsMatch(exp, @"([\w~]+&[\w~]+)"))
             {
                 op = "&";
             }
             // check if | exists
-            else if (Regex.IsMatch(exp, @"(\w+\|\|\w+)"))
+            else if (Regex.IsMatch(exp, @"([\w~]+\|\|[\w~]+)"))
             {
                 op = "||";
             }
             // check if - exists
-            else if (Regex.IsMatch(exp, @"(\w+~\w+)"))
+            else if (Regex.IsMatch(exp, @"(~[\w~]+)"))
             {
                 op = "~";
             }

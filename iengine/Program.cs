@@ -14,8 +14,11 @@ namespace iengine
             /********* TEST : TTEntails **************/
 
             // assumed given data
-            List<string> pLogic = new List<string> { "p2=> p3", "p3 => p1", "c => e", "b&e => f", "f&g => h", "p1=>d", "p1&p3 => c", "a", "b", "p2" };
-            List<string> asked = new List<string> { "f" };
+            //List<string> pLogic = new List<string> { "p2=> p3", "p3 => p1", "c => e", "b&e => f", "f&g => h", "p1=>d", "p1&p3 => c", "a", "b", "p2" };
+            List<string> pLogic = new List<string> { "a&p2=> p3", "~a||~b||d&p2 => p1", "a", "b", "p2", "d" };
+            //List<string> pLogic = new List<string> { "p1 & p2 & p3 & p4 & p5 & p6 & p7 => p8", "p1 & p3 & p4 & p6 & p7 & p8 => p9", "p6 & p7 & p4 & p5 & p9 => p10", "p13 & p12 & p11 => p14", "p11 & p12 & p4 & p5 & p10 => p13", "p11 & p1 & p4 & p5 & p6 => p12", "p1 & p2 & p6 & p8 & p10 => p11", "p1 & p2 & p6 & p8 => p", "p1", "p2", "p3", "p4", "p5", "p6", "p7"};
+            //List<string> pLogic = new List<string> { "a <=> c => ~d & b & b => a", "c", "~f || g" };
+            List<string> asked = new List<string> { "p1" };
 
             // the KB expression is a conjunction of all expressions
             Expression kb = new Expression("", "&");

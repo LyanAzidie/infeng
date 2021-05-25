@@ -10,7 +10,7 @@ namespace iengine
     {
         private Expression _kb;
         private Expression _goal;
-        //private int i = 0;
+        private int i = 0;
         private int _modelNum = 0;
 
         public int ModelNum { get => _modelNum; set => _modelNum = value; }
@@ -49,17 +49,21 @@ namespace iengine
                 {
                     Console.Write(m.Key + " - " + m.Value + "; ");
                 }
-                Console.Write("KB: " + PLTrue(_kb, model) + ". " + "KB|="+ _goal.Children[0].Variable + ": " + PLTrue(_goal, model));
+                Console.Write("KB: " + PLTrue(_kb, model) + ". " + "KB|="+ _goal.Variable + ": " + PLTrue(_goal, model));
                 Console.WriteLine();
                 */
 
                 // check if KB is true
                 if (PLTrue(_kb, model))
                 {
+                    bool match = PLTrue(_goal, model);
                     // count models
-                    if (model[_goal.Variable])
+                    if (match)
+                    {
                         ModelNum++;
-                    return PLTrue(_goal, model);
+                    }
+
+                    return match;
                 }
                 else
                 {
@@ -148,7 +152,7 @@ namespace iengine
             }
             return false;
         }
-
+        
         // get all the variables in a tree
         private List<string> GetAllVariables(Expression exp)
         {

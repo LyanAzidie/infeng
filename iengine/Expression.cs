@@ -53,6 +53,10 @@ namespace iengine
                     {
                         this.Variable = child.Variable;
                         this.Operation = child.Operation;
+                        foreach (Expression e in child.Children)
+                        {
+                            this.Children.Add(e);
+                        }
                         return this;
                     }
                     Children.Add(child);
@@ -186,7 +190,7 @@ namespace iengine
                 // there exists an operation
                 if (exp.Children[i].Operation != "")
                 {
-                    tempResult += UpdateHeight(exp.Children[i], curHeight+1);
+                    tempResult += UpdateHeight(exp.Children[i], curHeight);
                 }
                 // use the largest height as the node's height
                 if (tempResult > curHeight)

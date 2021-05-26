@@ -32,7 +32,6 @@ namespace iengine
                 if (child.Height == 0)
                 {
                     _agenda.Add(child);
-                    //_inferred[child.Variable] = true;
                 }
 
             }
@@ -73,42 +72,80 @@ namespace iengine
                             }
                             else if(HasVars(child.Children[0], CurrentSearchNode))
                             {
-                                if(child.Children[0].Operation == "&")
+                                Expression curLeft = child.Children[0].Children[1];
+                                Expression curRight = child.Children[0].Children[0];
+                                string lastOp = child.Children[0].Operation;
+
+                                for (int i = child.Height; i > 1; i--)
                                 {
-                                    Expression curLeft = child.Children[0].Children[1];
-                                    Expression curRight = child.Children[0].Children[0];
-
-                                    for (int i = child.Height; i > 1; i--)
+                                    if (curLeft.Variable != "")
                                     {
-                                        if (curLeft.Variable != "")
+                                        if (lastOp == "~")
                                         {
-                                            if (_inferred[curLeft.Variable] && curLeft.Variable == CurrentSearchNode.Variable)
+                                            if (!_inferred[curLeft.Variable] && curLeft.Variable == CurrentSearchNode.Variable)
                                                 _count[child]--;
                                         }
+                                        else if(_inferred[curLeft.Variable] && curLeft.Variable == CurrentSearchNode.Variable)
+                                        {
+                                            if (lastOp == "&")
+                                                _count[child]--;
+                                            else if (lastOp == "||")
+                                                _count[child] = 0;
+                                        }
+                                        if (_count[child] == 0)
+                                        {
+                                            if (child.Children[1].Variable == Goal.Variable)
+                                            {
+                                                _inferred[Goal.Variable] = true;
+                                                return true;
+                                            }
+                                            _agenda.Add(child.Children[1]);
+                                        }
+                                    }
 
-                                        if (curRight.Variable != "")
+                                    if (curRight.Variable != "")
+                                    {
+                                        if (lastOp == "~")
                                         {
-                                            if (_inferred[curRight.Variable] && curRight.Variable == CurrentSearchNode.Variable)
+                                            if (!_inferred[curRight.Variable] && curRight.Variable == CurrentSearchNode.Variable)
                                                 _count[child]--;
                                         }
-                                        else
+                                        else if (_inferred[curRight.Variable] && curRight.Variable == CurrentSearchNode.Variable)
                                         {
-                                            curLeft = curRight.Children[1];
+                                            if (lastOp == "&")
+                                                _count[child]--;
+                                            else if (lastOp == "||")
+                                                _count[child] = 0;
+                                        }
+                                        if (_count[child] == 0)
+                                        {
+                                            if (child.Children[1].Variable == Goal.Variable)
+                                            {
+                                                _inferred[Goal.Variable] = true;
+                                                return true;
+                                            }
+                                            _agenda.Add(child.Children[1]);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        if (curRight.Height > 0)
+                                        {
+                                            lastOp = curRight.Operation;
+                                            if (curRight.Children.Count == 2)
+                                                curLeft = curRight.Children[1];
                                             curRight = curRight.Children[0];
                                         }
-                                    }
-
-                                    if (_count[child] == 0)
-                                    {
-                                        if (child.Children[1].Variable == Goal.Variable)
+                                        else if (curLeft.Height > 0)
                                         {
-                                            _inferred[Goal.Variable] = true;
-                                            return true;
+                                            lastOp = curLeft.Operation;
+                                            if (curLeft.Children.Count == 2)
+                                                curLeft = curLeft.Children[1];
+                                            curRight = curLeft.Children[0];
                                         }
-                                        _agenda.Add(child.Children[1]);
+                                        
                                     }
                                 }
-
                             }
                         }
                         
@@ -153,12 +190,25 @@ namespace iengine
         {
             if (node.Height > 0)
             {
-                if (node.Children[0].Variable == CurrentSearchNode.Variable || node.Children[1].Variable == CurrentSearchNode.Variable)
+                if (node.Children.Count == 2)
                 {
-                    return true;
-                }
+                    if (node.Children[0].Variable == CurrentSearchNode.Variable || node.Children[1].Variable == CurrentSearchNode.Variable)
+                    {
+                        return true;
+                    }
 
-                return HasVars(node.Children[0], CurrentSearchNode) || HasVars(node.Children[1], CurrentSearchNode);
+                    return HasVars(node.Children[0], CurrentSearchNode) || HasVars(node.Children[1], CurrentSearchNode);
+                }
+                else
+                {
+                    if (node.Children[0].Variable == CurrentSearchNode.Variable)
+                    {
+                        return true;
+                    }
+
+                    return HasVars(node.Children[0], CurrentSearchNode);
+                }
+                
             }
             else
             {

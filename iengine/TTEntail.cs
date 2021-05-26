@@ -43,7 +43,7 @@ namespace iengine
             if (variables.Count == 0)
             {
                 // USE THIS BLOCK OF CODE TO PRINT THE TRUTH TABLE
-                /*
+                
                 Console.Write(++i + "/ ");
                 foreach (KeyValuePair<string, bool> m in model)
                 {
@@ -51,7 +51,7 @@ namespace iengine
                 }
                 Console.Write("KB: " + PLTrue(_kb, model) + ". " + "KB|="+ _goal.Variable + ": " + PLTrue(_goal, model));
                 Console.WriteLine();
-                */
+                
 
                 // check if KB is true
                 if (PLTrue(_kb, model))

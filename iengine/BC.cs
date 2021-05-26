@@ -19,7 +19,8 @@ namespace iengine
         {
             Kb = kb;
             Goal = asked;
-            CurSearchNode = asked;
+            if (asked.Operation == "")
+                CurSearchNode = asked;
         }
 
         public Expression Kb { get => _kb; set => _kb = value; }
@@ -31,6 +32,71 @@ namespace iengine
         // initialise search process
         public bool BCEntail()
         {
+            // check if the goal asked was more than just a variable (more than 0 in height)
+            if (Goal.Variable == "")
+            {
+                // a children of only 1 represents a NOT operation
+                if (Goal.Children.Count == 1)
+                {
+                    BC child = new BC(Kb, Goal.Children[0]);
+                    bool entails = child.BCEntail();
+
+                    if (!entails)
+                    {
+                        foreach (String e in child.Path)
+                        {
+                            Path.Add(e);
+                        }
+                    }
+                    return !entails;
+                }
+                else
+                {
+                    // envaluate both sides and add to path if true
+                    BC leftChild = new BC(Kb, Goal.Children[0]);
+                    BC rightChild = new BC(Kb, Goal.Children[1]);
+                    bool entailLeft = leftChild.BCEntail();
+                    bool entailRight = rightChild.BCEntail();
+                    if (entailLeft)
+                    {
+                        foreach (String e in leftChild.Path)
+                        {
+                            Path.Add(e);
+                        }
+                    }
+                    if (entailRight)
+                    {
+                        foreach (String e in rightChild.Path)
+                        {
+                            Path.Add(e);
+                        }
+                    }
+
+                    // based on the operation, return the corresponding result
+                    if (Goal.Operation == "&")
+                    {
+                        return entailLeft && entailRight;
+                    }
+                    else if (Goal.Operation == "||")
+                    {
+                        return entailLeft || entailRight;
+                    }
+                    else if (Goal.Operation == "=>")
+                    {
+                        if (entailLeft && !entailRight)
+                        {
+                            return false;
+                        }
+                        return true;
+                    }
+                    else if (Goal.Operation == "<=>")
+                    {
+                        return entailLeft == entailRight;
+                    }
+                }
+                return false;
+            }
+
             Path.Add(Goal.Variable);
             bool notExhausted = true;
 
@@ -90,6 +156,7 @@ namespace iengine
                         // case &
                         if (node.Children[0].Operation == "&")
                         {
+                            // its trying to find the sign so finding variable ""
                             BC checkLeft = new BC(Kb, node.Children[0].Children[0]);
                             BC checkRight = new BC(Kb, node.Children[0].Children[1]);
                             if (checkLeft.BCEntail() && checkRight.BCEntail())
@@ -121,14 +188,16 @@ namespace iengine
                                     if (!Path.Contains(s))
                                         Path.Add(s);
                                 }
+                                PathFound = true;
                             }
-                            else if (checkRight.BCEntail())
+                            if (checkRight.BCEntail())
                             {
                                 foreach (string s in checkRight.Path)
                                 {
                                     if (!Path.Contains(s))
                                         Path.Add(s);
                                 }
+                                PathFound = true;
                             }
                             return;
                         }
@@ -141,7 +210,10 @@ namespace iengine
                                 foreach (string s in checkLeft.Path)
                                 {
                                     if (!Path.Contains(s))
+                                    {
                                         Path.Add(s);
+                                        PathFound = true;
+                                    }
                                 }
                             }
                             return;

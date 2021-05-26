@@ -45,6 +45,8 @@
   <ItemGroup>
     <Compile Include="BC.cs" />
     <Compile Include="Expression.cs" />
+    <Compile Include="FC.cs" />
+    <Compile Include="FileParsingExtension.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TTEntail.cs" />
